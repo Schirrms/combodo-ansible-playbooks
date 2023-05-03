@@ -22,8 +22,8 @@ itop_ws_ansible_uuid: DEMO_UUID
 itop_ws_ansible_inventory: production
 
 #
-# Expected format for the inventory file
-#   Possible values: INI, YML 
+# Parameters to get the inventory file
+#   Format: possible values: INI, YML
 #
 itop_ws_ansible_inventory_format: INI
 
@@ -34,7 +34,8 @@ inventory_path: .
 inventory_name: inventory
 
 #
+# Parameters to get a list of hosts from an OQL
 #
-#
-itop_ws_ansible_oql_for_hosts: SELECT Server
+itop_ws_ansible_oql_for_hosts: SELECT VirtualMachine
 itop_ws_ansible_attribute: name
+hosts_in_file: True
