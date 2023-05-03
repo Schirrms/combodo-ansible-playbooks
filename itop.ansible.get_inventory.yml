@@ -5,7 +5,7 @@
   vars:
     url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
     format: "{{ itop_ws_ansible_inventory_format | lower }}"
-    file: "{{ inventory_path }}/{{ inventory_name }}.{{ format }}"
+    file: "{{ local_inventory_path }}/{{ local_inventory_name }}.{{ format }}"
     current_time: "{{ ansible_date_time.date }}-{{ ansible_date_time.time | replace(':','_') }}"
 
   tasks:

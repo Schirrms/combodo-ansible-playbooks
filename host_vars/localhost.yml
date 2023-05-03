@@ -1,41 +1,42 @@
 ---
 #
-# URL to reach iTop web services
+# This is the file that defines the parameters used by the Ansible controller to activate iTop WEB services
 #
+
+#
+# URL to reach iTop web services
 itop_root: http://15.0.0.14/dev/3.x/current
 itop_ws_version: 1.3
 
 #
 # Connection parameters
-#
 itop_ws_auth_user: admin
 itop_ws_auth_pwd: admin
 
 #
-# UUID of the Ansible application to work with
-#
+# UUID in iTop of the Ansible application to work with
 itop_ws_ansible_uuid: DEMO_UUID
 
 #
 # Name of the inventory to consider
-#
 itop_ws_ansible_inventory: production
 
 #
 # Parameters to get the inventory file
 #   Format: possible values: INI, YML
-#
 itop_ws_ansible_inventory_format: INI
 
-#
-# Location and name of the inventory file
-#
-inventory_path: .
-inventory_name: inventory
+#   Location and name of the inventory file
+local_inventory_path: .
+local_inventory_name: inventory
 
 #
 # Parameters to get a list of hosts from an OQL
-#
+#   OQL
 itop_ws_ansible_oql_for_hosts: SELECT VirtualMachine
+
+#   Attribute to read
 itop_ws_ansible_attribute: name
+
+#   Save the result in a file (next to the itop_hosts variable)
 hosts_in_file: True

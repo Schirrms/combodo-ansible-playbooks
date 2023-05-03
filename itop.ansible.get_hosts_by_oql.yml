@@ -4,7 +4,7 @@
 
   vars:
     url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
-    file: "{{ inventory_path }}/{{ inventory_name }}.txt"
+    file: "{{ local_inventory_path }}/{{ local_inventory_name }}.txt"
 
   tasks:
     - name: Call operation ansible/get_hosts_by_oql
