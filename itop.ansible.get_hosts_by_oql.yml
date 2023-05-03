@@ -1,0 +1,42 @@
+---
+- name: Get from iTop a list of hosts defined by an OQL
+  hosts: localhost
+
+  vars:
+    url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
+    file: "{{ inventory_path }}/{{ inventory_name }}.txt"
+
+  tasks:
+    - name: Call operation ansible/get_hosts_by_oql
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        method: POST
+        force_basic_auth: true
+        url_username: "{{ itop_ws_auth_user }}" 
+        url_password: "{{ itop_ws_auth_pwd }}"
+        body: json_data= {
+          "operation":"ansible/get_hosts_by_oql",
+          "uuid":"{{ itop_ws_ansible_uuid }}",
+          "inventory":"{{ itop_ws_ansible_inventory }}",
+          "oql":"{{ itop_ws_ansible_oql_for_hosts }}",
+          "attribute":"{{ itop_ws_ansible_attribute }}"
+          }
+        return_content: true
+      register: response 
+
+    - name: Save the Json data
+      ansible.builtin.set_fact:
+        jsondata: "{{ response.content | from_json }}"
+
+    - name: Get text_file 
+      ansible.builtin.set_fact:
+        text_file: "{{ jsondata | json_query(param) }}"
+      vars:
+        param: 'objects.*.text_file'
+
+    - name: Save result in file
+      ansible.builtin.copy:
+        content: "{{ text_file[0] }}"
+        dest: "{{ file }}"
+
+#   - delete backup if files are the same ?

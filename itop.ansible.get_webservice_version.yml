@@ -1,0 +1,33 @@
+---
+- name: Get from iTop the version of the web services dedicated to Ansible 
+  hosts: localhost 
+
+  gather_facts: false
+
+  vars:
+    url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
+
+  tasks:
+    - name: Call operation ansible/get_webservices_version 
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        method: POST
+        force_basic_auth: true
+        url_username: "{{ itop_ws_auth_user }}" 
+        url_password: "{{ itop_ws_auth_pwd }}"
+        body: json_data= {
+          "operation":"ansible/get_webservices_version"
+          }
+        return_content: true
+      register: response 
+
+    - name: Save the Json data to a variable as a fact
+      ansible.builtin.set_fact:
+        jsondata: "{{ response.content | from_json }}"
+
+    - name: Display message
+      ansible.builtin.debug:
+        msg: "{{ jsondata | json_query(param) }}"
+      vars:
+        param: 'message'
+

@@ -1,0 +1,26 @@
+---
+- name: Get from iTop the list of all possible web services
+  hosts: localhost 
+
+  gather_facts: false
+
+  vars:
+    url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
+
+  tasks:
+    - name: Call operation list_operation 
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        method: POST
+        force_basic_auth: true
+        url_username: "{{ itop_ws_auth_user }}" 
+        url_password: "{{ itop_ws_auth_pwd }}"
+        body: json_data= {
+          "operation":"list_operations"
+          }
+        return_content: true
+      register: response 
+
+    - name: Display response
+      ansible.builtin.debug:
+        var: response.content 

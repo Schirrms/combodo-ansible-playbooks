@@ -1,0 +1,40 @@
+---
+#
+# URL to reach iTop web services
+#
+itop_root: http://15.0.0.14/dev/3.x/current
+itop_ws_version: 1.3
+
+#
+# Connection parameters
+#
+itop_ws_auth_user: admin
+itop_ws_auth_pwd: admin
+
+#
+# UUID of the Ansible application to work with
+#
+itop_ws_ansible_uuid: DEMO_UUID
+
+#
+# Name of the inventory to consider
+#
+itop_ws_ansible_inventory: production
+
+#
+# Expected format for the inventory file
+#   Possible values: INI, YML 
+#
+itop_ws_ansible_inventory_format: INI
+
+#
+# Location and name of the inventory file
+#
+inventory_path: .
+inventory_name: inventory
+
+#
+#
+#
+itop_ws_ansible_oql_for_hosts: SELECT Server
+itop_ws_ansible_attribute: name
