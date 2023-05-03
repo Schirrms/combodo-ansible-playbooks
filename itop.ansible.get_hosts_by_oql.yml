@@ -28,15 +28,28 @@
       ansible.builtin.set_fact:
         jsondata: "{{ response.content | from_json }}"
 
-    - name: Get text_file 
+    - name: Get error code and message
       ansible.builtin.set_fact:
-        text_file: "{{ jsondata | json_query(param) }}"
-      vars:
-        param: 'objects.*.text_file'
+        error_code: "{{ jsondata | json_query('code') }}"
+        error_message: "{{ jsondata | json_query('message') }}"
+
+    - name: Display error, if any
+      ansible.builtin.debug:
+        var: error_message
+      when: error_code != "0"
+
+    - name: Get list of hosts
+      ansible.builtin.set_fact:
+        hosts_list: "{{ jsondata | json_query('objects.*.text_file') }}"
+      when: error_code == "0"
 
     - name: Save result in file
       ansible.builtin.copy:
-        content: "{{ text_file[0] }}"
+        content: "{{ hosts_list[0] }}"
         dest: "{{ file }}"
+      when: error_code == "0" and hosts_in_file == True
 
-#   - delete backup if files are the same ?
+    - name: Save list for reusability
+      ansible.builtin.set_fact:
+        itop_hosts: "{{ hosts_list[0] }}"
+      when: error_code == "0"
