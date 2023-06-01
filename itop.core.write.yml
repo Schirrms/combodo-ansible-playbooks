@@ -1,0 +1,133 @@
+---
+- name: Write a CI in iTop - update if exists and create if not
+  hosts: localhost
+
+  vars:
+    url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
+    obj_class: "Team"
+    key: '"name":"Helpdesk"'
+    output_fields: "id, friendlyname"
+    comment_for_create: "Created from Ansible application with UUID: {{ itop_ws_ansible_uuid }}"
+    comment_for_update: "Updated from Ansible application with UUID: {{ itop_ws_ansible_uuid }}"
+
+  tasks:
+    - name: Call operation core/get
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        method: POST
+        force_basic_auth: true
+        url_username: "{{ itop_ws_auth_user }}"
+        url_password: "{{ itop_ws_auth_pwd }}"
+        body: json_data= {
+          "operation":"core/get",
+          "class":"{{ obj_class }}",
+          "key":{
+            "org_id":{
+              "name":"Demo"
+              },
+            "name":"MyTeam2"
+            },
+          "output_fields":"{{ output_fields }}"
+          }
+        return_content: true
+      register: response
+
+    - name: Save the Json data
+      ansible.builtin.set_fact:
+        jsondata: "{{ response.content | from_json }}"
+
+    - name: Get error code and message
+      ansible.builtin.set_fact:
+        error_code: "{{ jsondata | json_query('code') }}"
+        error_message: "{{ jsondata | json_query('message') }}"
+
+    - name: Display error, if any
+      ansible.builtin.debug:
+        var: error_message
+      when: error_code != "0"
+
+    - name: Stop playbook if error
+      ansible.builtin.meta: end_play
+      when: error_code != "0"
+
+    - name: Get obj_key
+      ansible.builtin.set_fact:
+        obj_key: "{{ jsondata | json_query(param) }}"
+      vars:
+        param: 'objects.*.key'
+
+    - name: Call operation core/create
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        method: POST
+        force_basic_auth: true
+        url_username: "{{ itop_ws_auth_user }}"
+        url_password: "{{ itop_ws_auth_pwd }}"
+        body: json_data= {
+          "operation":"core/create",
+          "comment":"{{ comment_for_create }}",
+          "class":"{{ obj_class }}",
+          "fields":{
+            "org_id":{
+              "name":"Demo"
+              },
+            "name":"MyTeam2"
+            },
+          "output_fields":"{{ output_fields }}"
+          }
+        return_content: true
+      register: response
+      when: obj_key == "0" or obj_key == ""
+
+    - name: Call operation core/update
+      ansible.builtin.uri:
+        url: "{{ url }}"
+        method: POST
+        force_basic_auth: true
+        url_username: "{{ itop_ws_auth_user }}"
+        url_password: "{{ itop_ws_auth_pwd }}"
+        body: json_data= {
+          "operation":"core/update",
+          "comment":"{{ comment_for_update }}",
+          "class":"{{ obj_class }}",
+          "key":{
+            "name":"MyTeam2"
+            },
+          "fields":{
+            "email":"myteam2@demo.com",
+            "phone":"+33412345678",
+            "function":"Level 2"
+            },
+          "output_fields":"{{ output_fields }}"
+          }
+        return_content: true
+      register: response
+      when: obj_key != "0" and obj_key != ""
+
+    - name: Register operation
+      ansible.builtin.set_fact:
+        operation: "{{ 'created' if (obj_key == '0' or obj_key == '') else 'updated' }}"
+
+    - name: Save the Json data
+      ansible.builtin.set_fact:
+        jsondata: "{{ response.content | from_json }}"
+
+    - name: Get error code and message
+      ansible.builtin.set_fact:
+        error_code: "{{ jsondata | json_query('code') }}"
+        error_message: "{{ jsondata | json_query('message') }}"
+
+    - name: Display error, if any
+      ansible.builtin.debug:
+        var: error_message
+      when: error_code != "0"
+
+    - name: Get obj_key
+      ansible.builtin.set_fact:
+        obj_key: "{{ jsondata | json_query(param) }}"
+      vars:
+        param: 'objects.*.key'
+
+    - name: Display obj_key
+      ansible.builtin.debug:
+        msg: "Object of class {{ obj_class }} with key {{ obj_key }} has been {{ operation }}"
