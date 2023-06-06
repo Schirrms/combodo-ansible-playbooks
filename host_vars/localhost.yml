@@ -1,8 +1,10 @@
----
+#
+# @copyright   Copyright (C) 2023 Combodo SARL
+# @license     http://opensource.org/licenses/AGPL-3.0
 #
 # This is the file that defines the parameters used by the Ansible controller to activate iTop WEB services
 #
-
+---
 ########################################
 # General parameters to connect to iTop
 # URL to reach iTop web services

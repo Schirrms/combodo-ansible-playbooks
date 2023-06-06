@@ -1,3 +1,27 @@
+#
+# @copyright   Copyright (C) 2023 Combodo SARL
+# @license     http://opensource.org/licenses/AGPL-3.0
+#
+# This playbook writes a CI in iTop i.e. checks if a CI exists, creates it if not and updates it otherwise.
+#
+# Input parameters:
+#  Some are, by default, defined in the ./host_vars/localhost.yml file.
+#  - itop_root = Root URL of the iTop application
+#  - itop_ws_version = Web Service version
+#  - itop_ws_auth_user = User login
+#  - itop_ws_auth_pwd = User password
+#  - itop_ws_ansible_uuid = UUID of the Ansible application in iTop
+#  Other parameters dedicated to iTop's REST/JSON API need to be given to that playbook:
+#  - obj_class = Class of CI to be written
+#  - key = Set of attributes to be used for the reconciliation
+#  - fields = Set of attributes to be used for update or creation
+#  - output_fields = List of attributes to get from iTop once creation or update is done
+# Please, refer to iTop's wiki about REST/JSON services for more details on these parameters.
+#
+# Output parameters:
+#  - error_code = Error code sent by iTop's API
+#  - obj_key = Key of the created or updated CI
+#
 ---
 - name: Write a CI in iTop - update if exists and create if not
   hosts: localhost

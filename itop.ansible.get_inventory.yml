@@ -1,3 +1,25 @@
+#
+# @copyright   Copyright (C) 2023 Combodo SARL
+# @license     http://opensource.org/licenses/AGPL-3.0
+#
+# This playbook builds an inventory file based on the information stored in iTop CMDB.
+#
+# Input parameters:
+#  These are, by default, defined in the ./host_vars/localhost.yml file.
+#  - itop_root = Root URL of the iTop application
+#  - itop_ws_version = Web Service version
+#  - itop_ws_auth_user = User login
+#  - itop_ws_auth_pwd = User password
+#  - itop_ws_ansible_uuid = UUID of the Ansible application in iTop
+#  - itop_ws_ansible_inventory = Name of the inventory to consider
+#  - itop_ws_ansible_inventory_format = Format of the inventory output file
+#  - local_inventory_path = Path of the output file
+#  - local_inventory_name = Name of the output file
+#
+# Output parameters:
+#   - file.date-time = Copy of the previous inventory file, if any
+#   - file = Inventory file
+#
 ---
 - name: Get from iTop the Ansible inventory
   hosts: localhost 
