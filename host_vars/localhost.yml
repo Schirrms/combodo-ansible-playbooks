@@ -12,6 +12,8 @@ itop_root: http://15.0.0.14/dev/3.x/current
 itop_ws_version: 1.3
 
 # Connection parameters
+# For security reasons, these can be encrypted in an Ansible vault. Please, refer to Ansible documentation if you wish
+#  to use that feature: https://docs.ansible.com/ansible/latest/vault_guide/index.html
 itop_ws_auth_user: admin
 itop_ws_auth_pwd: admin
 
