@@ -67,22 +67,34 @@
         error_code: "{{ jsondata | json_query('code') }}"
         error_message: "{{ jsondata | json_query('message') }}"
 
-    - name: Display error, if any
-      ansible.builtin.debug:
-        var: error_message
+    - name: When operation is NOT successfull
+      block:
+        - name: Display error
+          ansible.builtin.debug:
+            var: error_message
+
+        - name: Set returned variables
+          ansible.builtin.set_fact:
+            error_code: "{{ error_code }}"
+            obj_key: 0
       when: error_code != "0"
 
-    - name: Get text_file
-      ansible.builtin.set_fact:
-        text_file: "{{ jsondata | json_query(param) }}"
-      vars:
-        param: 'objects.*.text_file'
-      when: error_code == "0"
+    - name: When operation is successfull
+      block:
+        - name: Get text_file
+          ansible.builtin.set_fact:
+            text_file: "{{ jsondata | json_query(param) }}"
+          vars:
+            param: 'objects.*.text_file'
 
-    - name: Save result in file
-      ansible.builtin.copy:
-        content: "{{ text_file[0] }}"
-        dest: "{{ file }}"
+        - name: Save result in file
+          ansible.builtin.copy:
+            content: "{{ text_file[0] }}"
+            dest: "{{ file }}"
+
+        - name: Set returned variables
+          ansible.builtin.set_fact:
+            error_code: = "0"
       when: error_code == "0"
 
 #   - delete backup if files are the same ?

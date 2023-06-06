@@ -57,23 +57,31 @@
         error_code: "{{ jsondata | json_query('code') }}"
         error_message: "{{ jsondata | json_query('message') }}"
 
-    - name: Display error, if any
-      ansible.builtin.debug:
-        var: error_message
+    - name: When operation is NOT successfull
+      block:
+        - name: Display error
+          ansible.builtin.debug:
+            var: error_message
+
+        - name: Set returned variables
+          ansible.builtin.set_fact:
+            error_code: "{{ error_code }}"
+            obj_key: 0
       when: error_code != "0"
 
-    - name: Get list of hosts
-      ansible.builtin.set_fact:
-        hosts_list: "{{ jsondata | json_query('objects.*.text_file') }}"
-      when: error_code == "0"
+    - name: When operation is successfull
+      block:
+        - name: Get list of hosts
+          ansible.builtin.set_fact:
+            hosts_list: "{{ jsondata | json_query('objects.*.text_file') }}"
 
-    - name: Save result in file
-      ansible.builtin.copy:
-        content: "{{ hosts_list[0] }}"
-        dest: "{{ file }}"
-      when: error_code == "0" and hosts_in_file == True
+        - name: Save result in file
+          ansible.builtin.copy:
+            content: "{{ hosts_list[0] }}"
+            dest: "{{ file }}"
+          when: hosts_in_file == True
 
-    - name: Save list for reusability
-      ansible.builtin.set_fact:
-        itop_hosts: "{{ hosts_list[0] }}"
+        - name: Save list in parameter
+          ansible.builtin.set_fact:
+            itop_hosts: "{{ hosts_list[0] }}"
       when: error_code == "0"
