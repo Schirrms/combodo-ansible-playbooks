@@ -164,20 +164,35 @@
             error_code: "{{ jsondata | json_query('code') }}"
             error_message: "{{ jsondata | json_query('message') }}"
 
-        - name: Display error, if any
-          ansible.builtin.debug:
-            var: error_message
+        - name: When operation is NOT successfull
+          block:
+            - name: Display error
+              ansible.builtin.debug:
+                var: error_message
+
+            - name: Set returned variables
+              ansible.builtin.set_fact:
+                error_code: "{{ error_code }}"
+                obj_key: 0
           when: error_code != "0"
 
-        - name: Get obj_key
-          ansible.builtin.set_fact:
-            obj_key: "{{ jsondata | json_query(param) }}"
-          vars:
-            param: 'objects.*.key'
+        - name: When operation is successfull
+          block:
+            - name: Get obj_key
+              ansible.builtin.set_fact:
+                obj_key: "{{ jsondata | json_query(param) }}"
+              vars:
+                param: 'objects.*.key'
 
-        - name: Display obj_key
-          ansible.builtin.debug:
-            msg: "Object of class {{ obj_class }} with key {{ obj_key }} has been {{ operation }}"
+            - name: Display obj_key
+              ansible.builtin.debug:
+                msg: "Object of class {{ obj_class }} with key {{ obj_key }} has been {{ operation }}"
+
+            - name: Set returned variables
+              ansible.builtin.set_fact:
+                error_code: = "0"
+                obj_key: "{{ obj_key }}"
+          when: error_code == "0"
       rescue:
         - name: Print when errors
           ansible.builtin.debug:
