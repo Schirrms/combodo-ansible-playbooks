@@ -28,19 +28,6 @@
 
   vars:
     url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
-    obj_class: "Team"
-    key:
-      "org_id":
-        "name": "Demo"
-      "name": "MyTeam2"
-    fields:
-      "org_id":
-        "name": "Demo"
-      "name": "MyTeam2"
-      "email": "myteam2@demo.com"
-      "phone": "+33412345678"
-      "function": "Level 2"
-    output_fields: "id, friendlyname"
     comment_for_create: "Created from Ansible application with UUID: {{ itop_ws_ansible_uuid }}"
     comment_for_update: "Updated from Ansible application with UUID: {{ itop_ws_ansible_uuid }}"
 
