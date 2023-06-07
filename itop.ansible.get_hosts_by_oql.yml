@@ -30,6 +30,12 @@
     url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
     file: "{{ local_inventory_path }}/{{ local_inventory_name }}.txt"
 
+# If you prefer to encrypt the login account and password in an Ansible vault:
+#  - Uncomment the following 2 lines
+#  - Store the parameter in a local itopvault.yml file
+#  vars_files:
+#    itopvault.yml
+
   tasks:
     - name: Call operation ansible/get_hosts_by_oql
       ansible.builtin.uri:

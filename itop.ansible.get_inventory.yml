@@ -30,6 +30,12 @@
     file: "{{ local_inventory_path }}/{{ local_inventory_name }}.{{ format }}"
     current_time: "{{ ansible_date_time.date }}-{{ ansible_date_time.time | replace(':','_') }}"
 
+# If you prefer to encrypt the login account and password in an Ansible vault:
+#  - Uncomment the following 2 lines
+#  - Store the parameter in a local itopvault.yml file
+#  vars_files:
+#    itopvault.yml
+
   tasks:
     - name: Check that the current inventory file exits
       stat:

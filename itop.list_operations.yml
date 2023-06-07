@@ -23,6 +23,12 @@
   vars:
     url: "{{ itop_root }}/webservices/rest.php?version={{ itop_ws_version }}"
 
+# If you prefer to encrypt the login account and password in an Ansible vault:
+#  - Uncomment the following 2 lines
+#  - Store the parameter in a local itopvault.yml file
+#  vars_files:
+#    itopvault.yml
+
   tasks:
     - name: Call operation list_operation 
       ansible.builtin.uri:

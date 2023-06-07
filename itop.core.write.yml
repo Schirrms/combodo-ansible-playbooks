@@ -31,6 +31,12 @@
     comment_for_create: "Created from Ansible application with UUID: {{ itop_ws_ansible_uuid }}"
     comment_for_update: "Updated from Ansible application with UUID: {{ itop_ws_ansible_uuid }}"
 
+# If you prefer to encrypt the login account and password in an Ansible vault:
+#  - Uncomment the following 2 lines
+#  - Store the parameter in a local itopvault.yml file
+#  vars_files:
+#    itopvault.yml
+
   tasks:
     - name: Check if CI exists
       block:
