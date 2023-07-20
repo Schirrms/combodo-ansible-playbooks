@@ -31,7 +31,7 @@ itop_ws_ansible_inventory: production
 itop_ws_ansible_inventory_format: YML
 
 #   Location and name of the inventory file on the Ansible controller
-local_inventory_path: .
+local_inventory_path: ../data/
 local_inventory_name: inventory
 
 ################################################
