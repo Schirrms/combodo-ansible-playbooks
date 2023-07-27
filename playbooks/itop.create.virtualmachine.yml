@@ -7,6 +7,9 @@
 #  - output_fields = List of attributes to get from iTop once creation or update is done
 # These can be set manually or result from the output of other playbooks, modules...
 #
+# Important note:
+# The output_fields are used to detected changes between existing object and updated one.
+#
 ---
 - name: Create a Virtual Machine in iTop
   hosts: localhost
@@ -36,7 +39,7 @@
             "name": "Ubuntu 20.04"
           "move2production": "2023-06-01"
           "managementip": "15.15.15.15"
-        output_fields: "id, friendlyname"
+        output_fields: "name, org_id, status, virtualhost_id, osfamily_id, osversion_id, move2production, managementip"
 
 - name: Call iTop playbook to create or update the CI
   import_playbook: itop.core.write.yml
