@@ -43,13 +43,21 @@
         return_content: true
       register: response 
 
-    - name: Save the Json data to a variable as a fact
+    - name: Save the Json data
       ansible.builtin.set_fact:
         jsondata: "{{ response.content | from_json }}"
 
+    - name: Get error code, message and answer
+      ansible.builtin.set_fact:
+        error_code: "{{ jsondata | json_query('code') }}"
+        message: "{{ jsondata | json_query('message') }}"
+
+    - name: Display error, if any
+      ansible.builtin.fail:
+        msg: "{{ message }}"
+      when: error_code != "0"
+
     - name: Display message
       ansible.builtin.debug:
-        msg: "{{ jsondata | json_query(param) }}"
-      vars:
-        param: 'message'
-
+        msg: "{{ message }}"
+      when: error_code == "0"
