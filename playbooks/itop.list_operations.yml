@@ -50,12 +50,12 @@
     - name: Get error code, message and answer
       ansible.builtin.set_fact:
         error_code: "{{ jsondata | json_query('code') }}"
-        error_message: "{{ jsondata | json_query('message') }}"
+        message: "{{ jsondata | json_query('message') }}"
         operations: "{{ jsondata | json_query('operations') }}"
 
     - name: Display error, if any
       ansible.builtin.fail:
-        msg: "{{ error_message }}"
+        msg: "{{ message }}"
       when: error_code != "0"
 
     - name: Display operations
