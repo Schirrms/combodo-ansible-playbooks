@@ -41,8 +41,26 @@
           "operation":"list_operations"
           }
         return_content: true
-      register: response 
+      register: response
 
-    - name: Display response
-      ansible.builtin.debug:
-        var: response.content 
+    - name: Save the Json data
+      ansible.builtin.set_fact:
+        jsondata: "{{ response.content | from_json }}"
+
+    - name: Get error code, message and answer
+      ansible.builtin.set_fact:
+        error_code: "{{ jsondata | json_query('code') }}"
+        error_message: "{{ jsondata | json_query('message') }}"
+        operations: "{{ jsondata | json_query('operations') }}"
+
+    - name: Display error, if any
+      ansible.builtin.fail:
+        msg: "{{ error_message }}"
+      when: error_code != "0"
+
+    - name: Display operations
+      block:
+        - name: Display operations
+          ansible.builtin.debug:
+            var: operations
+      when: error_code == "0"
