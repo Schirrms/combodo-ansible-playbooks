@@ -71,18 +71,11 @@
     - name: Get error code and message
       ansible.builtin.set_fact:
         error_code: "{{ jsondata | json_query('code') }}"
-        error_message: "{{ jsondata | json_query('message') }}"
+        message: "{{ jsondata | json_query('message') }}"
 
-    - name: When operation is NOT successfull
-      block:
-        - name: Display error
-          ansible.builtin.debug:
-            var: error_message
-
-        - name: Set returned variables
-          ansible.builtin.set_fact:
-            error_code: "{{ error_code }}"
-            obj_key: 0
+    - name: Display error, if any
+      ansible.builtin.fail:
+        msg: "{{ message }}"
       when: error_code != "0"
 
     - name: When operation is successfull
