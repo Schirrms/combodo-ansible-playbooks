@@ -23,7 +23,7 @@ itop_ws_auth_pwd: admin
 itop_ws_ansible_uuid: DEMO_UUID
 
 # Name of the inventory to consider
-itop_ws_ansible_inventory: production
+itop_ws_ansible_inventory: DMZ-1
 
 #######################################
 # Parameters to get the inventory file
@@ -33,6 +33,9 @@ itop_ws_ansible_inventory_format: YML
 #   Location and name of the inventory file on the Ansible controller
 local_inventory_path: ../data/
 local_inventory_name: inventory
+
+# Backup the previous inventory file: True / False
+backup_inventory: True
 
 ################################################
 # Parameters to get a list of hosts from an OQL
