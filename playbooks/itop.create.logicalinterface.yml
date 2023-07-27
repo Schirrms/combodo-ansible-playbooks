@@ -7,6 +7,9 @@
 #  - output_fields = List of attributes to get from iTop once creation or update is done
 # These can be set manually or result from the output of other playbooks, modules...
 #
+# Important note:
+# The output_fields are used to detected changes between existing object and updated one.
+#
 ---
 - name: Create a Logical Interface in iTop
   hosts: localhost
@@ -28,7 +31,7 @@
           "ipgateway": "10.11.12.1"
           "ipmask": "255.255.255.0"
           "speed": "100"
-        output_fields: "id, friendlyname"
+        output_fields: "name, ipaddress, macaddress, ipgateway, ipmask, speed"
 
 - name: Call iTop playbook to create or update the CI
   import_playbook: itop.core.write.yml
