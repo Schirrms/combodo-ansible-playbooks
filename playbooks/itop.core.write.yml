@@ -19,7 +19,7 @@
 # Please, refer to iTop's wiki about REST/JSON services for more details on these parameters.
 #
 # Output parameters:
-#  - error_code = Error code sent by iTop's API
+#  - code = Error code sent by iTop's API
 #  - obj_key = Key of the created or updated CI
 #
 ---
@@ -62,28 +62,25 @@
 
         - name: Get error code and message
           ansible.builtin.set_fact:
-            error_code: "{{ jsondata | json_query('code') }}"
-            error_message: "{{ jsondata | json_query('message') }}"
+            code: "{{ jsondata | json_query('code') }}"
+            message: "{{ jsondata | json_query('message') }}"
 
-        - name: Handle iTop error
-          block:
-          - name: Display error, if any
-            ansible.builtin.debug:
-              var: error_message
-
-          - name: Stop playbook if error
-            ansible.builtin.meta: end_play
-          when: error_code != "0"
+        - name: Display error, if any
+          ansible.builtin.fail:
+            msg: "{{ message }}"
+          when: code != "0"
 
         - name: Get obj_key
           ansible.builtin.set_fact:
             obj_key: "{{ jsondata | json_query(param) }}"
           vars:
             param: 'objects.*.key'
-      rescue:
-        - name: Print when errors
-          ansible.builtin.debug:
-            msg: 'We got an Ansible error when trying to check if CI exists...'
+
+        - name: Get fields
+          ansible.builtin.set_fact:
+            get_fields: "{{ jsondata | json_query(param) }}"
+          vars:
+            param: 'objects.*.fields'
 
     - name: Create CI
       block:
@@ -108,14 +105,21 @@
           ansible.builtin.set_fact:
             jsondata: "{{ response.content | from_json }}"
 
+        - name: Get error code and message
+          ansible.builtin.set_fact:
+            code: "{{ jsondata | json_query('code') }}"
+            message: "{{ jsondata | json_query('message') }}"
+
+        - name: Display error, if any
+          ansible.builtin.fail:
+            msg: "{{ message }}"
+          when: code != "0"
+
         - name: Register operation
           ansible.builtin.set_fact:
             operation: "{{ 'created' }}"
+          changed_when: code == "0"
       when: obj_key == "0" or obj_key == ""
-      rescue:
-        - name: Print when errors
-          ansible.builtin.debug:
-            msg: 'We got an Ansible error when trying to create the CI...'
 
     - name: Update CI
       block:
@@ -141,52 +145,41 @@
           ansible.builtin.set_fact:
             jsondata: "{{ response.content | from_json }}"
 
+        - name: Get error code and message
+          ansible.builtin.set_fact:
+            code: "{{ jsondata | json_query('code') }}"
+            message: "{{ jsondata | json_query('message') }}"
+
+        - name: Display error, if any
+          ansible.builtin.fail:
+            msg: "{{ message }}"
+          when: code != "0"
+
+        - name: Get fields
+          ansible.builtin.set_fact:
+            set_fields: "{{ jsondata | json_query(param) }}"
+          vars:
+            param: 'objects.*.fields'
+
         - name: Register operation
           ansible.builtin.set_fact:
             operation: "{{ 'updated' }}"
+          changed_when: get_fields != set_fields
       when: obj_key != "0" and obj_key != ""
-      rescue:
-        - name: Print when errors
-          ansible.builtin.debug:
-            msg: 'We got an Ansible error when trying to update the CI...'
 
-    - name: Final handling
+    - name: Operation is successful at this stage
       block:
-        - name: Get error code and message
+        - name: Get obj_key
           ansible.builtin.set_fact:
-            error_code: "{{ jsondata | json_query('code') }}"
-            error_message: "{{ jsondata | json_query('message') }}"
+            obj_key: "{{ jsondata | json_query(param) }}"
+          vars:
+            param: 'objects.*.key'
 
-        - name: When operation is NOT successfull
-          block:
-            - name: Display error
-              ansible.builtin.debug:
-                var: error_message
-
-            - name: Set returned variables
-              ansible.builtin.set_fact:
-                error_code: "{{ error_code }}"
-                obj_key: 0
-          when: error_code != "0"
-
-        - name: When operation is successfull
-          block:
-            - name: Get obj_key
-              ansible.builtin.set_fact:
-                obj_key: "{{ jsondata | json_query(param) }}"
-              vars:
-                param: 'objects.*.key'
-
-            - name: Display obj_key
-              ansible.builtin.debug:
-                msg: "Object of class {{ obj_class }} with key {{ obj_key }} has been {{ operation }}"
-
-            - name: Set returned variables
-              ansible.builtin.set_fact:
-                error_code: = "0"
-                obj_key: "{{ obj_key }}"
-          when: error_code == "0"
-      rescue:
-        - name: Print when errors
+        - name: Display obj_key
           ansible.builtin.debug:
-            msg: 'We got an Ansible error when finalizing the processing...'
+            msg: "Object of class {{ obj_class }} with key {{ obj_key }} has been {{ operation }}"
+
+        - name: Set returned variables
+          ansible.builtin.set_fact:
+            code: = "0"
+            obj_key: "{{ obj_key }}"
