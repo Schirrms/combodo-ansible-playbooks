@@ -38,6 +38,18 @@
 #    itopvault.yml
 
   tasks:
+    - name: Check key variables are defined and not empty
+      ansible.builtin.fail:
+        msg: "One variable is empty"
+      with_items:
+        - "{{ obj_class }}"
+        - "{{ key }}"
+        - "{{ fields }}"
+        - "{{ output_fields }}"
+      when:
+        - not item
+        - item is none
+
     - name: Check if CI exists
       block:
         - name: Call operation core/get

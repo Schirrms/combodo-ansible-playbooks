@@ -37,6 +37,18 @@
 #    itopvault.yml
 
   tasks:
+    - name: Check key variables are defined and not empty
+      ansible.builtin.fail:
+        msg: "One variable is empty"
+      with_items:
+        - "{{ itop_ws_ansible_uuid }}"
+        - "{{ itop_ws_ansible_inventory }}"
+        - "{{ itop_ws_ansible_oql_for_hosts }}"
+        - "{{ itop_ws_ansible_attribute }}"
+      when:
+        - not item
+        - item is none
+
     - name: Call operation ansible/get_hosts_by_oql
       ansible.builtin.uri:
         url: "{{ url }}"
