@@ -42,7 +42,6 @@
         msg: "One variable is empty"
       with_items:
         - "{{ itop_ws_ansible_uuid }}"
-        - "{{ itop_ws_ansible_inventory }}"
         - "{{ itop_ws_ansible_oql_for_hosts }}"
         - "{{ itop_ws_ansible_attribute }}"
       when:
