@@ -43,4 +43,3 @@
 
 - name: Call iTop playbook to create or update the CI
   import_playbook: itop.core.write.yml
-

@@ -95,6 +95,7 @@
             param: 'objects.*.fields'
 
     - name: Create CI
+      when: obj_key == "0" or obj_key == ""
       block:
         - name: Call operation core/create
           ansible.builtin.uri:
@@ -131,9 +132,9 @@
           ansible.builtin.set_fact:
             operation: "{{ 'created' }}"
           changed_when: code == "0"
-      when: obj_key == "0" or obj_key == ""
 
     - name: Update CI
+      when: obj_key != "0" and obj_key != ""
       block:
         - name: Call operation core/update
           ansible.builtin.uri:
@@ -177,7 +178,6 @@
           ansible.builtin.set_fact:
             operation: "{{ 'updated' }}"
           changed_when: get_fields != set_fields
-      when: obj_key != "0" and obj_key != ""
 
     - name: Operation is successful at this stage
       block:
